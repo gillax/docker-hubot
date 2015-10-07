@@ -1,2 +1,2 @@
-# hubot-slack-jenkins
-integrate with slack and jenkins
+# docker-hubot
+hubot integrates with slack and jenkins
