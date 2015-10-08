@@ -1,4 +1,4 @@
-FROM node:4.1
+FROM node:4.1.2
 
 ### hubot setup ###
 # add user
@@ -15,21 +15,19 @@ USER hubot
 WORKDIR $HUBOT_HOME_DIR
 
 # install yeoman and generator
+RUN npm config set registry http://registry.npmjs.org/
 RUN npm install -g yo generator-hubot
 
-# Setup hubot (without heroke-keepalive)
+# Setup hubot (with Jenkins integration scripts)
 RUN mkdir ws && cd ws \
-  && yo hubot --adapter=slack --defaults
+  && yo hubot --adapter=slack --defaults \
+	&& curl -fSL "https://raw.githubusercontent.com/github/hubot-scripts/master/src/scripts/jenkins.coffee" -o scripts/jenkins.coffee
 
 # Optional (if you don't need heroke-keepalive)
 #RUN cd ws \
 #  && npm uninstall hubot-heroku-keepalive --save \
 #  && sed -i -e "/hubot-heroku-keepalive/d" external-scripts.json
   
-
-# Add jenkins integration script
-ADD https://raw.githubusercontent.com/github/hubot-scripts/master/src/scripts/jenkins.coffee ws/scripts/
-
-
-ENTRYPOINT ["$HUBOT_HOME_DIR/ws/bin/hubot", "-a", "slack"]
+WORKDIR $HUBOT_HOME_DIR/ws
+ENTRYPOINT ["./bin/hubot", "-a", "slack"]
 
